@@ -1,5 +1,11 @@
 package com.epam.mjc;
 
+import com.sun.jdi.connect.Connector;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class MethodParser {
 
     /**
@@ -20,6 +26,43 @@ public class MethodParser {
      * @return {@link MethodSignature} object filled with parsed values from source string
      */
     public MethodSignature parseFunction(String signatureString) {
-        throw new UnsupportedOperationException("You should implement this method.");
+        // private void log(String value)
+        List<String> delimeters = List.of(" ", ",", "(", ")");
+
+        StringSplitter stringSplitter = new StringSplitter();
+        List<String> strings = stringSplitter.splitByDelimiters(signatureString, delimeters);
+        String access = null;
+        String returnType = null;
+        String methodName = null;
+        if(strings.get(0).equalsIgnoreCase("private") || strings.get(0).equalsIgnoreCase("public") || strings.get(0).equalsIgnoreCase("protected")){
+            access = strings.get(0);
+            returnType = strings.get(1);
+            methodName = strings.get(2);
+
+            strings.remove(0);
+            strings.remove(0);
+            strings.remove(0);
+            System.out.println(strings.toString());
+        } else {
+            returnType = strings.get(0);
+            methodName = strings.get(1);
+
+            strings.remove(0);
+            strings.remove(0);
+
+        }
+
+        List<MethodSignature.Argument> arguments = new ArrayList<>();
+        for (int i = 0; i < strings.size(); i=i+2) {
+            MethodSignature.Argument argument = new MethodSignature.Argument(strings.get(i), strings.get(i+1));
+            arguments.add(argument);
+        }
+        MethodSignature methodSignature = new MethodSignature(methodName, arguments);
+        methodSignature.setAccessModifier(access);
+        methodSignature.setReturnType(returnType);
+return methodSignature;
+
     }
+
+
 }
